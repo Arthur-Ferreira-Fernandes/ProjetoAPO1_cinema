@@ -17,7 +17,6 @@ public class CancelarReservaView {
     private JFrame frmCancelarReserva;
     private int reservaId;
     private JLabel lblCancelarReserva;
-    JFrame frame;
 
     public JFrame getFrame() {
         return frmCancelarReserva;
@@ -45,21 +44,6 @@ public class CancelarReservaView {
         frmCancelarReserva.setBounds(100, 100, 450, 300);
         frmCancelarReserva.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frmCancelarReserva.getContentPane().setLayout(null);
-        
-        JButton btnVoltarMenu = new JButton("Voltar ao Menu");
-        btnVoltarMenu.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Abre o Menu Principal
-                MainView menu = new MainView();
-                menu.open(); // método que você já criou em MainView
-                // Fecha a tela atual
-                frmCancelarReserva.dispose();
-            }
-        });
-        btnVoltarMenu.setBounds(147, 160, 140, 30);
-        frmCancelarReserva.getContentPane().add(btnVoltarMenu);
-        
-        
 
         lblCancelarReserva = new JLabel("Cancelar reserva: " + reservaId);
         lblCancelarReserva.setBounds(107, 65, 250, 20);

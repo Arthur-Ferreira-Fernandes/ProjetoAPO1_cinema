@@ -49,7 +49,6 @@ public class MainView {
 			public void actionPerformed(ActionEvent e) {
 		        IngressoView IngressoView = new IngressoView();
 		        IngressoView.frame.setVisible(true);
-		        frmMenuPrincipal.dispose();
 		    }
 		});
 		btnComprarIngresso.setBounds(80, 57, 158, 23);
@@ -60,7 +59,6 @@ public class MainView {
 		    public void actionPerformed(ActionEvent e) {
 		        BuscarReservaView buscarReservaView = new BuscarReservaView();
 		        buscarReservaView.getFrame().setVisible(true);
-		        frmMenuPrincipal.dispose();
 		    }
 		});
 		btnBuscarReserva.setBounds(80, 91, 158, 23);
@@ -71,7 +69,6 @@ public class MainView {
 		    public void actionPerformed(ActionEvent e) {
 		    	 LimpezaView limpezaViewS = new LimpezaView();
 		         limpezaViewS.frame.setVisible(true);
-		         frmMenuPrincipal.dispose();
 		    }
 		});
 		btnFazerManutencao.setBounds(80, 125, 158, 23);

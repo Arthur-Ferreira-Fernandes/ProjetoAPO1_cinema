@@ -39,6 +39,7 @@ public class LimpezaView {
      * Create the application.
      */
     public LimpezaView() {
+        // Inicializa conexão e controller
         try {
             DBConnection db = new DBConnection();
             controller = new ServicoController(db.getConnection());
