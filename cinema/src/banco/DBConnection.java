@@ -29,7 +29,7 @@ this.setHost("localhost");
 this.setPort("3306");
 this.setSchema("cinema");
 this.setUser("root");
-this.setPassword("senha");
+this.setPassword("");
 this.doConnection();
 }
 

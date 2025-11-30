@@ -1,146 +1,176 @@
 package view;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import java.awt.EventQueue;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import banco.DBConnection;
 import cinema.ServicoController;
 
 public class LimpezaView {
 
-private ServicoController controller;
+    JFrame frame;
+    private JTextField txtSala;
+    private JTextField txtResultado;
+    private ServicoController controller;
 
-public LimpezaView(Display display) {
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                LimpezaView window = new LimpezaView();
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-// -----------------------------
-// Conexão e Controller
-// -----------------------------
-DBConnection db = new DBConnection();
-controller = new ServicoController(db.getConnection());
+    /**
+     * Create the application.
+     */
+    public LimpezaView() {
+        // Inicializa conexão e controller
+        try {
+            DBConnection db = new DBConnection();
+            controller = new ServicoController(db.getConnection());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco: " + e.getMessage());
+            return;
+        }
 
-// -----------------------------
-// SHELL (Janela)
-// -----------------------------
-Shell shell = new Shell(display);
-shell.setText("Sistema do Cinema - Serviços");
-shell.setSize(650, 500);
-shell.setLayout(null);
+        initialize();
+    }
 
-// -----------------------------
-// CAMPO DE SALA
-// -----------------------------
-Label lblSala = new Label(shell, SWT.NONE);
-lblSala.setText("Sala:");
-lblSala.setBounds(20, 20, 40, 25);
+    /**
+     * Initialize the contents of the frame.
+     */
+    private void initialize() {
+        frame = new JFrame();
+        frame.setBounds(100, 100, 612, 517);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setLayout(null);
+        
+        JButton btnVoltarMenu = new JButton("Voltar ao Menu");
+        btnVoltarMenu.setBounds(226, 162, 163, 23);
+        btnVoltarMenu.addActionListener(e -> {
+            frame.dispose(); // fecha a janela atual
+            MainView menu = new MainView();
+            menu.open(); // abre o menu principal
+        });
+        frame.getContentPane().add(btnVoltarMenu);
 
-Text txtSala = new Text(shell, SWT.BORDER);
-txtSala.setBounds(70, 20, 80, 25);
+        JLabel lblSala = new JLabel("Sala:");
+        lblSala.setBounds(188, 29, 46, 14);
+        frame.getContentPane().add(lblSala);
 
-// -----------------------------
-// ÁREA DE RESULTADO
-// -----------------------------
-Text txtResultado = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-txtResultado.setBounds(20, 220, 600, 220);
+        txtSala = new JTextField();
+        txtSala.setBounds(255, 26, 86, 20);
+        frame.getContentPane().add(txtSala);
+        txtSala.setColumns(10);
 
-// -----------------------------
-// BOTÕES
-// -----------------------------
-Button btnIniciarLimpeza = new Button(shell, SWT.PUSH);
-btnIniciarLimpeza.setText("Iniciar Limpeza");
-btnIniciarLimpeza.setBounds(20, 70, 150, 30);
+        txtResultado = new JTextField();
+        txtResultado.setBounds(37, 213, 542, 235);
+        frame.getContentPane().add(txtResultado);
+        txtResultado.setColumns(10);
 
-Button btnFinalizarLimpeza = new Button(shell, SWT.PUSH);
-btnFinalizarLimpeza.setText("Finalizar Limpeza");
-btnFinalizarLimpeza.setBounds(200, 70, 150, 30);
+        // =============================
+        // BOTÕES
+        // =============================
+        JButton btnIniciarLimpeza = new JButton("Iniciar Limpeza");
+        btnIniciarLimpeza.setBounds(37, 89, 163, 23);
+        frame.getContentPane().add(btnIniciarLimpeza);
 
-Button btnIniciarMan = new Button(shell, SWT.PUSH);
-btnIniciarMan.setText("Iniciar Manutenção");
-btnIniciarMan.setBounds(20, 120, 150, 30);
+        JButton btnFinalizarLimpeza = new JButton("Finalizar Limpeza");
+        btnFinalizarLimpeza.setBounds(37, 123, 163, 23);
+        frame.getContentPane().add(btnFinalizarLimpeza);
 
-Button btnFinalizarMan = new Button(shell, SWT.PUSH);
-btnFinalizarMan.setText("Finalizar Manutenção");
-btnFinalizarMan.setBounds(200, 120, 180, 30);
+        JButton btnIniciarMan = new JButton("Iniciar Manutenção");
+        btnIniciarMan.setBounds(226, 89, 163, 23);
+        frame.getContentPane().add(btnIniciarMan);
 
-Button btnStatus = new Button(shell, SWT.PUSH);
-btnStatus.setText("Ver Status da Sala");
-btnStatus.setBounds(20, 170, 180, 30);
+        JButton btnFinalizarMan = new JButton("Finalizar Manutenção");
+        btnFinalizarMan.setBounds(226, 123, 163, 23);
+        frame.getContentPane().add(btnFinalizarMan);
 
-Button btnHistorico = new Button(shell, SWT.PUSH);
-btnHistorico.setText("Ver Histórico");
-btnHistorico.setBounds(220, 170, 150, 30);
+        JButton btnHistorico = new JButton("Ver Histórico");
+        btnHistorico.setBounds(416, 89, 163, 23);
+        frame.getContentPane().add(btnHistorico);
 
-//-----------------------------
-//EVENTOS DOS BOTÕES
-//-----------------------------
+        JButton btnStatus = new JButton("Ver Status da Sala");
+        btnStatus.setBounds(416, 123, 163, 23);
+        frame.getContentPane().add(btnStatus);
 
-btnIniciarLimpeza.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.iniciarLimpeza(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        // =============================
+        // LISTENERS
+        // =============================
+        btnIniciarLimpeza.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.iniciarLimpeza(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
 
-btnFinalizarLimpeza.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.finalizarLimpeza(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        btnFinalizarLimpeza.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.finalizarLimpeza(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
 
-btnIniciarMan.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.iniciarManutencao(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        btnIniciarMan.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.iniciarManutencao(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
 
-btnFinalizarMan.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.finalizarManutencao(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        btnFinalizarMan.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.finalizarManutencao(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
 
-btnStatus.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.verStatusSala(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        btnStatus.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.verStatusSala(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
 
-btnHistorico.addListener(SWT.Selection, e -> {
-try {
-int sala = Integer.parseInt(txtSala.getText());
-txtResultado.setText(controller.verHistorico(sala));
-} catch (Exception ex) {
-txtResultado.setText("Erro: " + ex.getMessage());
-}
-});
+        btnHistorico.addActionListener(e -> {
+            try {
+                int sala = Integer.parseInt(txtSala.getText());
+                txtResultado.setText(controller.verHistorico(sala));
+            } catch (Exception ex) {
+                txtResultado.setText("Erro: " + ex.getMessage());
+            }
+        });
+    }
 
-//-----------------------------
-//ABRIR A JANELA
-//-----------------------------
-shell.open();
+	public void open() {
+		// TODO Auto-generated method stub
+		
+	}
 
-while (!shell.isDisposed()) {
-if (!display.readAndDispatch())
-display.sleep();
-}
-}
-
-public static void main(String[] args) {
-Display display = new Display();
-new LimpezaView(display);
-display.dispose();
-}
 }

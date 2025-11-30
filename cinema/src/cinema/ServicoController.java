@@ -1,87 +1,132 @@
 package cinema;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 
-import banco.LimpezaDAO;
-import banco.ManutencaoDAO;
+import banco.LimpezaBanco;
+import banco.ManutencaoBanco;
+import banco.ReservaBanco;
+import banco.PoltronaBanco;
 
 public class ServicoController {
 
-private LimpezaDAO limpezaDAO;
-private ManutencaoDAO manutencaoDAO;
+    private LimpezaBanco limpezaBanco;
+    private ManutencaoBanco manutencaoBanco;
 
-public ServicoController(Connection conn) {
-this.limpezaDAO = new LimpezaDAO(conn);
-this.manutencaoDAO = new ManutencaoDAO(conn);
-}
+    private ReservaBanco reservaBanco;
+    private PoltronaBanco poltronaBanco;
 
-// LIMPEZA
-public String iniciarLimpeza(int salaId) throws Exception {
-limpezaDAO.iniciarLimpeza(salaId);
-return "Limpeza iniciada com sucesso!";
-}
+    public ServicoController(Connection conn) {
+        this.limpezaBanco = new LimpezaBanco(conn);
+        this.manutencaoBanco = new ManutencaoBanco(conn);
 
-public String finalizarLimpeza(int salaId) throws Exception {
-String status = limpezaDAO.verificarStatus(salaId);
+        this.reservaBanco = new ReservaBanco(conn);
+        this.poltronaBanco = new PoltronaBanco(conn);
+    }
 
-if (status == null || !status.equals("EM ANDAMENTO"))
-return "Nenhuma limpeza em andamento.";
+    // ============================
+    // LIMPEZA
+    // ============================
+    public String iniciarLimpeza(int salaId) throws Exception {
+        limpezaBanco.iniciarLimpeza(salaId);
+        return "Limpeza iniciada com sucesso!";
+    }
 
-limpezaDAO.atualizarStatus(salaId, "concluido");
-limpezaDAO.registrarConclusao(salaId);
+    public String finalizarLimpeza(int salaId) throws Exception {
+        String status = limpezaBanco.verificarStatus(salaId);
 
-return "Limpeza finalizada com sucesso!";
-}
+        if (status == null || !status.equals("EM ANDAMENTO"))
+            return "Nenhuma limpeza em andamento.";
 
-// MANUTENÇÃO
-public String iniciarManutencao(int salaId) throws Exception {
-manutencaoDAO.iniciarManutencao(salaId);
-return "Manutenção iniciada com sucesso!";
-}
+        limpezaBanco.atualizarStatus(salaId, "concluido");
+        limpezaBanco.registrarConclusao(salaId);
 
-public String finalizarManutencao(int salaId) throws Exception {
-String status = manutencaoDAO.verificarStatus(salaId);
+        return "Limpeza finalizada com sucesso!";
+    }
 
-if (status == null || !status.equals("EM ANDAMENTO"))
-return "Nenhuma manutenção em andamento.";
+    // ============================
+    // MANUTENÇÃO
+    // ============================
+    public String iniciarManutencao(int salaId) throws Exception {
+        manutencaoBanco.iniciarManutencao(salaId);
+        return "Manutenção iniciada com sucesso!";
+    }
 
-manutencaoDAO.finalizarManutencao(salaId);
+    public String finalizarManutencao(int salaId) throws Exception {
+        String status = manutencaoBanco.verificarStatus(salaId);
 
-return "Manutenção finalizada com sucesso!";
-}
+        if (status == null || !status.equals("EM ANDAMENTO"))
+            return "Nenhuma manutenção em andamento.";
 
-// STATUS DA SALA
-public String verStatusSala(int salaId) throws Exception {
-String lim = limpezaDAO.verificarStatus(salaId);
-String man = manutencaoDAO.verificarStatus(salaId);
+        manutencaoBanco.finalizarManutencao(salaId);
 
-String s = "\nStatus da Sala " + salaId + ":\n";
+        return "Manutenção finalizada com sucesso!";
+    }
 
-s += "- Limpeza: " + (lim == null ? "Nenhuma" : lim) + "\n";
-s += "- Manutenção: " + (man == null ? "Nenhuma" : man) + "\n";
+    // ============================
+    // STATUS DA SALA
+    // ============================
+    public String verStatusSala(int salaId) throws Exception {
+        String lim = limpezaBanco.verificarStatus(salaId);
+        String man = manutencaoBanco.verificarStatus(salaId);
 
-return s;
-}
+        String s = "\nStatus da Sala " + salaId + ":\n";
 
-// HISTÓRICO
-public String verHistorico(int salaId) throws Exception {
+        s += "- Limpeza: " + (lim == null ? "Nenhuma" : lim) + "\n";
+        s += "- Manutenção: " + (man == null ? "Nenhuma" : man) + "\n";
 
-StringBuilder sb = new StringBuilder();
-sb.append("\n=== HISTÓRICO DA SALA " + salaId + " ===\n\n");
+        return s;
+    }
 
-// Limpeza
-sb.append("--- LIMPEZA ---\n");
-ResultSet rs = limpezaDAO.historicoLimpeza(salaId);
-while (rs.next())
-sb.append(rs.getString("data") + " - " + rs.getString("status") + "\n");
+    // ============================
+    // HISTÓRICO
+    // ============================
+    public String verHistorico(int salaId) throws Exception {
 
-// Manutenção
-sb.append("\n--- MANUTENÇÃO ---\n");
-rs = manutencaoDAO.historicoManutencao(salaId);
-while (rs.next())
-sb.append(rs.getString("data") + " - " + rs.getString("status") + "\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== HISTÓRICO DA SALA " + salaId + " ===\n\n");
 
-return sb.toString();
-}
+        sb.append("--- LIMPEZA ---\n");
+        var rs = limpezaBanco.historicoLimpeza(salaId);
+        while (rs.next())
+            sb.append(rs.getString("data") + " - " + rs.getString("status") + "\n");
+
+        sb.append("\n--- MANUTENÇÃO ---\n");
+        rs = manutencaoBanco.historicoManutencao(salaId);
+        while (rs.next())
+            sb.append(rs.getString("data") + " - " + rs.getString("status") + "\n");
+
+        return sb.toString();
+    }
+
+    // ============================
+    // CANCELAMENTO DE RESERVA
+    // ============================
+    public String cancelarReserva(int reservaId) throws Exception {
+
+        String status = reservaBanco.verificarStatus(reservaId);
+
+        if (status == null)
+            return "Reserva não encontrada.";
+
+        if (!status.equals("CONFIRMADA") && !status.equals("Comprado"))
+            return "A reserva não pode ser cancelada.";
+
+        // cancelar no banco
+        reservaBanco.cancelar(reservaId);
+
+        // liberar poltrona
+        Integer poltronaId = reservaBanco.getPoltrona(reservaId);
+        if (poltronaId != null)
+            poltronaBanco.atualizarDisponibilidade(poltronaId, true);
+
+        return "Reserva cancelada com sucesso!";
+    }
+    
+ // ============================
+ // VERIFICA SE EXISTE RESERVA
+ // ============================
+ public boolean existeReserva(int reservaId) throws Exception {
+     String status = reservaBanco.verificarStatus(reservaId);
+     return status != null;
+ }
 }
