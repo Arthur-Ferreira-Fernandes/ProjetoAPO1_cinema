@@ -7,6 +7,7 @@ import model.Sessao;
 
 public class SessaoDAO {
 
+    // [Agregação]: Retorna List de Sessoes
     public List<Sessao> listarPorFilme(int filmeId) {
         List<Sessao> lista = new ArrayList<>();
         String sql = "SELECT * FROM Sessao WHERE FilmeId = ?";

@@ -6,15 +6,17 @@ import model.Sala;
 
 public class SalaController {
 
+    // [Composição]: O Controller possui um DAO para acesso a dados.
     private SalaDAO salaDAO;
 
     public SalaController() {
         this.salaDAO = new SalaDAO();
     }
 
+    // [Associação]: Retorna um objeto do tipo 'Sala'.
     public Sala buscarSala(int salaId) {
+        // [TRATAMENTO DE ERROS]
         try {
-            // Usa o método existente no seu SalaDAO atual
             return salaDAO.buscarPorId(salaId);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -22,8 +24,8 @@ public class SalaController {
         }
     }
     
-    // Método auxiliar para texto simples, caso precise
     public String verificarStatusSala(int salaId) {
+        // [TRATAMENTO DE ERROS]: Tratamento robusto para feedback ao usuário em String.
         try {
             Sala s = salaDAO.buscarPorId(salaId);
             if (s != null) {

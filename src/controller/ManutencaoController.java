@@ -7,6 +7,7 @@ import model.Manutencao;
 
 public class ManutencaoController {
 
+    // [Composição]
     private ManutencaoDAO manutencaoDAO;
 
     public ManutencaoController() {
@@ -14,7 +15,9 @@ public class ManutencaoController {
     }
 
     public String iniciarManutencao(int salaId) {
+        // [TRATAMENTO DE ERROS]
         try {
+            // [Associação]: Cria o objeto Modelo para passar ao DAO
             Manutencao manutencao = new Manutencao();
             manutencao.setSalaId(salaId);
             manutencao.setDataManutencao(LocalDateTime.now());

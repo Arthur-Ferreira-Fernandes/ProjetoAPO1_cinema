@@ -2,19 +2,13 @@ package model;
 
 import java.time.LocalDateTime;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'sessoes'.
 public class Sessao {
-    // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
     private LocalDateTime inicio;
     private LocalDateTime fim;
     
-    // [BANCO DE DADOS / ASSOCIAÇÃO]: Foreign Key (FK) para tabela 'filmes'.
-    // Relacionamento: Uma Sessão exibe um Filme.
     private int filmeId;
     
-    // [BANCO DE DADOS / ASSOCIAÇÃO]: Foreign Key (FK) para tabela 'salas'.
-    // Relacionamento: Uma Sessão ocorre em uma Sala.
     private int salaId;
 
     // [SOBRECARGA]: Construtor padrão.

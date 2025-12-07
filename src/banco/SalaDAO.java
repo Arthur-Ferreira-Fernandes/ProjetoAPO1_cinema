@@ -10,6 +10,7 @@ public class SalaDAO {
 
     public Sala buscarPorId(int salaId) throws SQLException {
         String sql = "SELECT * FROM Sala WHERE SalaId = ?";
+        // [Associação]: Instancia um objeto do tipo Sala (Modelo)
         Sala sala = null;
 
         try (Connection conn = new DBConnection().getConnection();
@@ -21,7 +22,6 @@ public class SalaDAO {
                 if (rs.next()) {
                     sala = new Sala();
                     sala.setId(rs.getInt("SalaId"));
-                    // [CORREÇÃO]: Nomes das colunas conforme seu novo SQL
                     sala.setNumero(rs.getInt("NumeroSala")); 
                     sala.setCapacidade(rs.getInt("Capacidade"));
                     sala.setTipo(rs.getString("TipoSala")); 

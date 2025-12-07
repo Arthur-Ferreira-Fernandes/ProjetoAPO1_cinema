@@ -1,6 +1,5 @@
 package model;
 
-// [MODELO / DTO]: Representação simplificada para visualização/transporte de dados.
 public class Reserva {
 
     private int id;

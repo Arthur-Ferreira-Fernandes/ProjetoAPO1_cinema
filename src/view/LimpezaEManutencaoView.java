@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import controller.LimpezaController;
 import controller.ManutencaoController;
 import controller.SalaController;
-import model.Sala; // [NOVO IMPORT]
+import model.Sala;
 
 public class LimpezaEManutencaoView {
 
@@ -20,6 +20,7 @@ public class LimpezaEManutencaoView {
     private JTextField txtSala;
     private JTextArea txtResultado;
     
+    // [COMPOSIÇÃO]: A View possui e gerencia seus controladores.
     private LimpezaController limpezaController;
     private ManutencaoController manutencaoController;
     private SalaController salaController;
@@ -36,6 +37,7 @@ public class LimpezaEManutencaoView {
     }
 
     public LimpezaEManutencaoView() {
+        // [COMPOSIÇÃO]: Instanciação dos controllers no construtor.
         this.limpezaController = new LimpezaController();
         this.manutencaoController = new ManutencaoController();
         this.salaController = new SalaController();
@@ -142,7 +144,8 @@ public class LimpezaEManutencaoView {
                                 "=== HISTÓRICO DE LIMPEZA ===\n" + histLimp;
                     break;
                     
-                case 6: // [REFATORAÇÃO]: Uso do Objeto Sala
+                case 6: 
+                    // [ASSOCIAÇÃO]: Uso do Objeto Sala retornado pelo controller.
                     Sala sala = salaController.buscarSala(salaId);
                     if (sala != null) {
                         String statusIcon = sala.isDisponivel() ? "✅ DISPONÍVEL" : "❌ INDISPONÍVEL";
@@ -161,8 +164,10 @@ public class LimpezaEManutencaoView {
             txtResultado.setText(resultado);
             txtResultado.setCaretPosition(0);
 
+        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Captura erro de formatação numérica (input inválido).
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frame, "O número da sala deve ser um valor inteiro válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Captura genérica para bugs imprevistos.
         } catch (Exception ex) {
             txtResultado.setText("Erro inesperado: " + ex.getMessage());
             ex.printStackTrace();

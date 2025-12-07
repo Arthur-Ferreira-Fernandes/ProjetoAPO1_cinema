@@ -5,6 +5,7 @@ import model.Cliente;
 
 public class ClienteDAO {
 
+    // [Associação]: Recebe Cliente
     public int salvarOuBuscar(Cliente c) throws SQLException {
         int id = buscarIdPorEmail(c.getEmail());
         if (id != -1) {
@@ -13,6 +14,7 @@ public class ClienteDAO {
         return inserir(c);
     }
 
+    // [Encapsulamento]
     private int buscarIdPorEmail(String email) throws SQLException {
         String sql = "SELECT ClienteId FROM Cliente WHERE Email = ?";
         try (Connection conn = new DBConnection().getConnection();
@@ -27,7 +29,6 @@ public class ClienteDAO {
     }
 
     private int inserir(Cliente c) throws SQLException {
-        // [CORREÇÃO]: Coluna NomeCliente
         String sql = "INSERT INTO Cliente (NomeCliente, Email, Telefone) VALUES (?, ?, ?)";
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -41,6 +42,7 @@ public class ClienteDAO {
                 return rs.getInt(1);
             }
         }
+        // [Tratamento de Erros]
         throw new SQLException("Erro ao inserir cliente.");
     }
 }

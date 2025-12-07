@@ -1,15 +1,11 @@
 package model;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'poltronas' do banco de dados.
 public class Poltrona {
     
-    // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
     private String numero; // Ex: A1, B5
     private boolean disponivel;
     
-    // [BANCO DE DADOS / ASSOCIAÇÃO]: Foreign Key (FK) apontando para a tabela 'salas'.
-    // Representa a relação: Uma Poltrona pertence a uma Sala.
     private int salaId;
 
     // [SOBRECARGA]: Construtor padrão (vazio).

@@ -37,10 +37,10 @@ public class IngressoView {
     private JTextField textTelefoneCliente;
 
     // Estado da Tela
-    // [ASSOCIAÇÃO]: Referência simples a um objeto Poltrona selecionado.
+    // [ASSOCIAÇÃO]: Referência simples a um objeto Poltrona selecionado na outra tela.
     private Poltrona assentoSelecionado;
     
-    // [AGREGAÇÃO - List]: A View agrega listas de objetos do modelo (Filme, Sessao) para exibição.
+    // [AGREGAÇÃO - List]: A View agrega listas de objetos do modelo (Filme, Sessao) para exibição nos combos.
     private List<Filme> filmes = new ArrayList<>();
     private List<Sessao> sessoesDoFilme = new ArrayList<>();
 
@@ -85,8 +85,7 @@ public class IngressoView {
             int idx = comboFilme.getSelectedIndex();
             if (idx >= 0 && idx < filmes.size()) {
                 Filme f = filmes.get(idx);
-                // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Gatilho para buscar sessões baseadas no filme.
-                carregarDatas(f.getId()); // Usa ID do model Filme
+                carregarDatas(f.getId()); 
                 comboHorario.removeAllItems();
                 assentoSelecionado = null;
                 atualizarLabelAssento();
@@ -164,23 +163,20 @@ public class IngressoView {
     }
 
     private void carregarFilmes() {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Controller executa SELECT * FROM filmes.
         filmes = filmeController.listarTodos();
         comboFilme.removeAllItems();
         for (Filme f : filmes) {
-            comboFilme.addItem(f.getNome()); // Usa getNome do model Filme
+            comboFilme.addItem(f.getNome()); 
         }
     }
 
     private void carregarDatas(int filmeId) {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Controller executa SELECT ... WHERE filme_id = ?.
         sessoesDoFilme = sessaoController.listarPorFilme(filmeId);
         comboData.removeAllItems();
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         
         for (Sessao s : sessoesDoFilme) {
             String dataFormatada = s.getInicio().toLocalDate().format(formatoData);
-            // Evita duplicatas no combo
             boolean existe = false;
             for (int i = 0; i < comboData.getItemCount(); i++) {
                 if (comboData.getItemAt(i).equals(dataFormatada)) {
@@ -232,11 +228,10 @@ public class IngressoView {
             return;
         }
 
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Controller busca poltronas da sala no banco.
-        // [AGREGAÇÃO - List]: Retorna uma lista de poltronas.
+        // [AGREGAÇÃO - List]: Retorna lista de poltronas.
         List<Poltrona> poltronas = ingressoController.listarPoltronasPorSala(sessao.getSalaId());
         
-        // [ASSOCIAÇÃO]: Passa 'this' para a view filha (SelecionarPoltronaView).
+        // [ASSOCIAÇÃO]: Passa 'this' para a view filha (SelecionarPoltronaView), criando uma ligação.
         SelecionarPoltronaView selecionar = new SelecionarPoltronaView(frame, poltronas, this);
         selecionar.setVisible(true);
     }
@@ -258,7 +253,6 @@ public class IngressoView {
             return;
         }
 
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Controller realiza INSERT da venda e UPDATE da poltrona.
         int idIngresso = ingressoController.comprarIngresso(
             textNomeCliente.getText(),
             textEmailCliente.getText(),

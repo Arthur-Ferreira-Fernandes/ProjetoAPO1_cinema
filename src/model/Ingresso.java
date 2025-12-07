@@ -2,15 +2,11 @@ package model;
 
 import java.time.LocalDateTime;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'ingressos'.
 public class Ingresso {
-    // [BANCO DE DADOS]: Chave Primária.
     private int id;
     private String status;
     private LocalDateTime dataCompra;
     
-    // [BANCO DE DADOS / ASSOCIAÇÃO]: Foreign Keys para Cliente, Sessão e Poltrona.
-    // Relaciona os dados da venda.
     private int clienteId;
     private int sessaoId;
     private int poltronaId;

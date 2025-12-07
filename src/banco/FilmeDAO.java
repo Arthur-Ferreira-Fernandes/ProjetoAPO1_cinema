@@ -10,6 +10,7 @@ import model.Filme;
 
 public class FilmeDAO {
 
+    // [Agregação]: Retorna uma List de Filmes. O DAO agrega múltiplos objetos Filme.
     public List<Filme> listarTodos() {
         List<Filme> lista = new ArrayList<>();
         String sql = "SELECT * FROM Filme";
@@ -19,9 +20,10 @@ public class FilmeDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
+                // [Associação]: Criação de instâncias de Filme dentro do loop
                 Filme f = new Filme();
                 f.setId(rs.getInt("FilmeId"));
-                f.setNome(rs.getString("Titulo")); // [CORREÇÃO]: Nome da coluna no banco
+                f.setNome(rs.getString("Titulo")); 
                 f.setDuracao(rs.getInt("Duracao"));
                 f.setGenero(rs.getString("Genero"));
                 f.setClassificacao(rs.getString("Classificacao"));

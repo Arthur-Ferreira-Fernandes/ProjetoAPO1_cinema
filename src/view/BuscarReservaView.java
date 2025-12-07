@@ -7,12 +7,14 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import controller.IngressoController;
-import model.Reserva; // [NOVO IMPORT]
+import model.Reserva;
 
 public class BuscarReservaView {
 
     private JFrame frmBuscarReserva;
     private JTextField textFieldCodReserva;
+    
+    // [COMPOSIÇÃO]: Controller necessário para realizar a busca.
     private IngressoController controller;
 
     public BuscarReservaView() {
@@ -64,17 +66,17 @@ public class BuscarReservaView {
 
             int reservaId = Integer.parseInt(texto);
             
-            // [MUDANÇA]: Agora manipulamos o Objeto Reserva
             Reserva reserva = controller.buscarReserva(reservaId);
             
             if (reserva != null) {
-                // Passamos o ID para a tela de cancelamento (ou poderia passar o objeto inteiro)
+                // [ASSOCIAÇÃO]: Navegação para a tela de cancelamento, passando o ID encontrado.
                 CancelarReservaView cancelar = new CancelarReservaView(reserva.getId());
                 cancelar.getFrame().setVisible(true);
                 frmBuscarReserva.dispose();
             } else {
                 JOptionPane.showMessageDialog(frmBuscarReserva, "Reserva não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
+        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Validação de entrada numérica.
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frmBuscarReserva, "Digite um número válido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }

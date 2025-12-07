@@ -12,31 +12,29 @@ import model.Reserva;
 public class IngressoDAO {
 
     public int inserir(Ingresso ingresso) throws SQLException {
-        // [CORREÇÃO]: Chama a Procedure sp_ComprarIngresso que verifica Sala Disponível
         String sql = "{call sp_ComprarIngresso(?, ?, ?, ?, ?)}";
         int idGerado = -1;
 
         try (Connection conn = new DBConnection().getConnection();
              CallableStatement cs = conn.prepareCall(sql)) {
             
-            // Parâmetros IN
+            // Parâmetros de Entrada (IN)
             cs.setInt(1, ingresso.getClienteId());
             cs.setInt(2, ingresso.getSessaoId());
             cs.setInt(3, ingresso.getPoltronaId());
-            cs.setString(4, ingresso.getStatus()); // 'PAGO'
+            cs.setString(4, ingresso.getStatus()); 
             
-            // Parâmetro OUT (p_IngressoId)
             cs.registerOutParameter(5, Types.INTEGER);
             
             cs.execute();
             
+            // Recupera o ID gerado pela procedure
             idGerado = cs.getInt(5);
         }
         return idGerado;
     }
 
     public Reserva buscarPorId(int ingressoId) {
-        // [CORREÇÃO]: Coluna StatusIngresso
         String sql = "SELECT IngressoId, StatusIngresso, PoltronaId FROM Ingresso WHERE IngressoId = ?";
         Reserva reserva = null;
 
@@ -46,6 +44,7 @@ public class IngressoDAO {
             ps.setInt(1, ingressoId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    // [Associação]: Instanciando objeto Reserva
                     reserva = new Reserva(
                         rs.getInt("IngressoId"),
                         rs.getString("StatusIngresso"),

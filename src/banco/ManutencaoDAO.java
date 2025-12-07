@@ -7,6 +7,7 @@ import model.Manutencao;
 
 public class ManutencaoDAO {
 
+    // [Associação]: Recebe o objeto Manutencao para persistência
     public void registrarInicio(Manutencao manutencao) throws SQLException {
         String sql = "{call sp_IniciarManutencao(?)}";
         
@@ -31,9 +32,9 @@ public class ManutencaoDAO {
     
     public String buscarHistorico(int salaId) {
         StringBuilder sb = new StringBuilder();
-        // [CORREÇÃO]: Colunas corretas do SQL
         String sql = "SELECT * FROM Manutencao WHERE SalaId = ?";
 
+        // [Tratamento de Erros]
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             

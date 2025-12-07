@@ -1,8 +1,6 @@
 package model;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'clientes'.
 public class Cliente {
-    // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
     private String nome;
     private String email;

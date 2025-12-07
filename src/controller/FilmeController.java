@@ -15,7 +15,6 @@ public class FilmeController {
 
     // [AGREGAÇÃO - List]: Retorna uma lista de objetos Filme para a View.
     public List<Filme> listarTodos() {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Executa SELECT * FROM filmes via DAO.
         return filmeDAO.listarTodos();
     }
 }

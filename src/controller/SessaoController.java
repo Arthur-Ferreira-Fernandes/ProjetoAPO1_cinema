@@ -15,7 +15,6 @@ public class SessaoController {
 
     // [AGREGAÇÃO - List]: Retorna uma lista de objetos Sessao recuperados do banco.
     public List<Sessao> listarPorFilme(int filmeId) {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Delega a consulta SQL para o DAO.
         return sessaoDAO.listarPorFilme(filmeId);
     }
 }

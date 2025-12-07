@@ -7,10 +7,12 @@ import model.Limpeza;
 
 public class LimpezaDAO {
 
+    // [Tratamento de Erros]: O método declara que pode lançar uma exceção (throws SQLException)
+    // [Associação]: O método recebe um objeto 'Limpeza' como parâmetro, criando uma dependência/associação.
     public void registrarInicio(Limpeza limpeza) throws SQLException {
-        // [CORREÇÃO]: Usa a Procedure do banco que bloqueia a sala automaticamente
         String sql = "{call sp_IniciarLimpeza(?)}";
         
+        // [Tratamento de Erros]
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
@@ -20,7 +22,6 @@ public class LimpezaDAO {
     }
 
     public void registrarFim(Limpeza limpeza) throws SQLException {
-        // [CORREÇÃO]: Usa a Procedure que libera a sala
         String sql = "{call sp_FinalizarLimpeza(?)}";
         
         try (Connection conn = new DBConnection().getConnection();
@@ -32,7 +33,6 @@ public class LimpezaDAO {
     }
 
     public String buscarUltimoStatus(int salaId) {
-        // [CORREÇÃO]: Coluna StatusLimpeza
         String sql = "SELECT StatusLimpeza FROM Limpeza WHERE SalaId = ? ORDER BY LimpezaId DESC LIMIT 1";
         String status = "Desconhecido";
 
@@ -45,6 +45,7 @@ public class LimpezaDAO {
                     status = rs.getString("StatusLimpeza");
                 }
             }
+        // [Tratamento de Erros]
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -53,7 +54,6 @@ public class LimpezaDAO {
 
     public String buscarHistorico(int salaId) {
         StringBuilder sb = new StringBuilder();
-        // [CORREÇÃO]: Colunas DataLimpeza e StatusLimpeza
         String sql = "SELECT * FROM Limpeza WHERE SalaId = ?";
 
         try (Connection conn = new DBConnection().getConnection();

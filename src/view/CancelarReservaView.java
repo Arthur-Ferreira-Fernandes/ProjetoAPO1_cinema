@@ -58,7 +58,6 @@ public class CancelarReservaView {
                 "Confirmação", JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Controller executa DELETE ou UPDATE para cancelar.
             String msg = controller.cancelarReserva(reservaId);
             
             JOptionPane.showMessageDialog(frmCancelarReserva, msg, "Informação", JOptionPane.INFORMATION_MESSAGE);

@@ -1,8 +1,6 @@
 package model;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'salas'.
 public class Sala {
-    // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
     private int numero;
     private int capacidade;

@@ -7,6 +7,7 @@ import model.Limpeza;
 
 public class LimpezaController {
 
+    // [Composição]
     private LimpezaDAO limpezaDAO;
 
     public LimpezaController() {
@@ -14,8 +15,9 @@ public class LimpezaController {
     }
 
     public String iniciarLimpeza(int salaId) {
+        // [TRATAMENTO DE ERROS]
         try {
-            // Cria objeto conforme esperado pelo LimpezaDAO
+            // [Associação]: Instancia e configura o objeto Modelo
             Limpeza limpeza = new Limpeza();
             limpeza.setSalaId(salaId);
             limpeza.setDataLimpeza(LocalDateTime.now());

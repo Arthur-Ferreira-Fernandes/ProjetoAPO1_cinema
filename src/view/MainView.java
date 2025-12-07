@@ -8,10 +8,10 @@ public class MainView {
 
     private JFrame frmMenuPrincipal;
 
-    // [MÉTODOS ESTÁTICOS]: Ponto de entrada da aplicação.
+    // [MÉTODOS ESTÁTICOS]: Ponto de entrada da aplicação (Entry Point).
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            // [TRATAMENTO DE ERROS E EXCEÇÕES]: Bloco try-catch para garantir que a interface inicie ou falhe graciosamente.
+            // [TRATAMENTO DE ERROS E EXCEÇÕES]: Garante que falhas na inicialização da UI sejam logadas.
             try {
                 MainView window = new MainView();
                 window.open();
@@ -34,7 +34,7 @@ public class MainView {
         
         JButton btnComprarIngresso = new JButton("Comprar Ingresso");
         btnComprarIngresso.addActionListener(e -> {
-            // [ASSOCIAÇÃO]: MainView cria e depende de IngressoView para navegação.
+            // [ASSOCIAÇÃO]: MainView instancia IngressoView para navegação entre telas.
             IngressoView ingressoView = new IngressoView();
             ingressoView.frame.setVisible(true);
             frmMenuPrincipal.dispose();

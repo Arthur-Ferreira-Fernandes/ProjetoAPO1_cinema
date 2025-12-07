@@ -2,7 +2,6 @@ package model;
 
 import java.time.LocalDateTime;
 
-// [BANCO DE DADOS]: Mapeia a tabela 'manutencao'.
 public class Manutencao {
     // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
@@ -10,8 +9,6 @@ public class Manutencao {
     private String status;
     private String observacao;
     
-    // [BANCO DE DADOS / ASSOCIAÇÃO]: Foreign Key (FK) para tabela 'salas'.
-    // Relacionamento: Manutenção ocorre em uma Sala.
     private int salaId;
 
     // [SOBRECARGA]: Construtor padrão.

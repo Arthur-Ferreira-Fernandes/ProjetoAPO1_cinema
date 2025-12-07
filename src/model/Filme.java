@@ -1,27 +1,21 @@
 package model;
 
-// [BANCO DE DADOS]: Representa a tabela 'filmes' no banco de dados.
 public class Filme {
     
-    // [BANCO DE DADOS]: Chave Primária (PK).
     private int id;
     
-    // [BANCO DE DADOS]: Mapeia a coluna 'Titulo' da tabela.
-    private String nome; // No banco é 'Titulo'
+    private String nome;
     
-    // [BANCO DE DADOS]: Mapeia a coluna 'duracao' (geralmente em minutos).
     private int duracao;
     
     private String genero;
     private String classificacao;
     private String sinopse;
 
-    // [SOBRECARGA]: Construtor padrão (sem argumentos).
-    // Necessário para frameworks de persistência ou instanciação vazia.
+    // [SOBRECARGA]
     public Filme() {}
 
-    // [SOBRECARGA]: Construtor com argumentos.
-    // Permite criar o objeto já com os dados principais preenchidos.
+    // [SOBRECARGA]
     public Filme(String nome, int duracao, String genero, String classificacao) {
         this.nome = nome;
         this.duracao = duracao;
@@ -69,8 +63,6 @@ public class Filme {
     }
 
     // [SOBRESCRITA]: Reescreve o método toString() da classe Object.
-    // Isso é fundamental para que, ao adicionar o objeto Filme em um JComboBox (na View),
-    // apareça apenas o nome do filme e não o endereço de memória do objeto.
     @Override
     public String toString() {
         return this.nome; 
