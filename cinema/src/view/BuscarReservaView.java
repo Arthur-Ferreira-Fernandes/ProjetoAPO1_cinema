@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import banco.DBConnection;
-import cinema.ServicoController;
+import controller.ServicoController;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -47,9 +47,9 @@ public class BuscarReservaView {
         JButton btnVoltarMenu = new JButton("Voltar ao Menu");
         btnVoltarMenu.setBounds(212, 126, 120, 30);
         btnVoltarMenu.addActionListener(e -> {
-            frmBuscarReserva.dispose(); // fecha a janela atual
+            frmBuscarReserva.dispose(); 
             MainView menu = new MainView();
-            menu.open(); // abre o menu principal
+            menu.open(); 
         });
         frmBuscarReserva.getContentPane().add(btnVoltarMenu);
 
@@ -65,12 +65,13 @@ public class BuscarReservaView {
         btnBuscar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    // [TRATAMENTO DE ERROS]: Valida se o texto é um número inteiro.
                     int reservaId = Integer.parseInt(textFieldCodReserva.getText().trim());
                     
-                    // Opcional: aqui você pode validar se o id existe no banco antes de abrir a tela
+                    // [ASSOCIAÇÃO]: Instancia e usa ServicoController.
                     DBConnection db = new DBConnection();
                     ServicoController sc = new ServicoController(db.getConnection());
-                    boolean existe = sc.existeReserva(reservaId); // método que verifica se a reserva existe
+                    boolean existe = sc.existeReserva(reservaId); 
                     
                     if (!existe) {
                         JOptionPane.showMessageDialog(frmBuscarReserva,
@@ -79,11 +80,13 @@ public class BuscarReservaView {
                         return;
                     }
 
-                    // Abrir tela de cancelamento passando o id
+                    // [ASSOCIAÇÃO]: Navega para CancelarReservaView passando o ID.
                     CancelarReservaView cancelar = new CancelarReservaView(reservaId);
                     cancelar.getFrame().setVisible(true);
+                    frmBuscarReserva.dispose();
 
                 } catch (NumberFormatException ex) {
+                    // [TRATAMENTO DE ERROS]: Captura erro de conversão de string para int.
                     JOptionPane.showMessageDialog(frmBuscarReserva, "Número inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -100,5 +103,4 @@ public class BuscarReservaView {
     public JFrame getFrame() {
         return frmBuscarReserva;
     }
-
 }

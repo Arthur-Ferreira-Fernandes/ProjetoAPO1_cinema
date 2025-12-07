@@ -18,8 +18,10 @@ public class Filme {
         return nome;
     }
 
+    // [SOBRESCRITA / OVERRIDE]: Permite que o JComboBox exiba apenas o nome do filme
+    // ao invés de 'model.Filme@1a2b3c'.
     @Override
     public String toString() {
-        return nome; // Combo exibirá o nome
+        return nome; 
     }
 }

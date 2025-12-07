@@ -2,20 +2,23 @@ package model;
 
 public class Poltrona {
 
+    // [ATRIBUTOS]: Encapsulamento (private) para proteger o estado do objeto.
     private String numero;
     private boolean ocupada;
 
+    // [MÉTODO COM SOBRECARGA]: Construtor 1 - Recebe apenas o número (assume livre).
     public Poltrona(String numero) {
         this.numero = numero;
-        this.ocupada = false; // padrão
+        this.ocupada = false; // Valor padrão
     }
 
+    // [MÉTODO COM SOBRECARGA]: Construtor 2 - Recebe número e status explícito.
     public Poltrona(String numero, boolean ocupada) {
         this.numero = numero;
         this.ocupada = ocupada;
     }
 
-    // Getter e Setter
+    // Getters e Setters
     public String getNumero() {
         return numero;
     }
@@ -24,6 +27,7 @@ public class Poltrona {
         this.numero = numero;
     }
 
+    // Método utilitário para facilitar leitura de regra de negócio
     public boolean isDisponivel() {
         return !ocupada;
     }
@@ -32,6 +36,8 @@ public class Poltrona {
         this.ocupada = ocupada;
     }
 
+    // [SOBRESCRITA / OVERRIDE]: Reescreve o método da classe Object.
+    // Essencial para que ComboBoxes e Lists mostrem o texto legível e não o hash da memória.
     @Override
     public String toString() {
         return "Poltrona{" +

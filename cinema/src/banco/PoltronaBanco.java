@@ -6,16 +6,21 @@ import model.Poltrona;
 
 public class PoltronaBanco {
 
+    // [ASSOCIAÇÃO]: Mantém uma referência para a conexão.
     private Connection conn;
 
+    // [MÉTODO COM SOBRECARGA]: Construtor que recebe a conexão injetada.
     public PoltronaBanco(Connection conn) {
         this.conn = conn;
     }
 
+    // [MÉTODO COM SOBRECARGA]: Construtor que cria sua própria conexão.
     public PoltronaBanco() {
         try {
+            // [ASSOCIAÇÃO]: Cria instância de DBConnection.
             this.conn = new DBConnection().getConnection();
         } catch (Exception e) {
+            // [TRATAMENTO DE ERROS]: Captura falha na conexão.
             e.printStackTrace();
             this.conn = null;
         }
@@ -24,7 +29,11 @@ public class PoltronaBanco {
     // Atualiza a disponibilidade
     public void atualizarDisponibilidade(int poltronaId, boolean disponivel) {
         if (conn == null) return;
+        
+        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Query de Update.
         String sql = "UPDATE Poltrona SET Disponibilidade = ? WHERE PoltronaId = ?";
+        
+        // [TRATAMENTO DE ERROS]: Try-with-resources (fecha stmt automaticamente).
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, disponivel);
             stmt.setInt(2, poltronaId);
@@ -34,12 +43,10 @@ public class PoltronaBanco {
         }
     }
 
-    // Marca como ocupada
     public void ocuparPoltrona(int poltronaId) {
         atualizarDisponibilidade(poltronaId, false);
     }
 
-    // Marca como livre
     public void liberarPoltrona(int poltronaId) {
         atualizarDisponibilidade(poltronaId, true);
     }
@@ -47,12 +54,18 @@ public class PoltronaBanco {
     // Lista TODAS as poltronas
     public List<Poltrona> listarPoltronas(int salaId) {
         if (conn == null) return Collections.emptyList();
+        
+        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Query de Select.
         String sql = "SELECT PoltronaId, PoltronaNumero, Disponibilidade FROM Poltrona WHERE SalaId = ?";
+        
+        // [AGREGAÇÃO - LIST]: Cria uma lista de objetos Poltrona.
         List<Poltrona> lista = new ArrayList<>();
+        
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, salaId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    // [ASSOCIAÇÃO]: Instancia objetos do Model baseados no ResultSet.
                     lista.add(new Poltrona(
                         rs.getString("PoltronaNumero"),
                         !rs.getBoolean("Disponibilidade")
@@ -60,12 +73,12 @@ public class PoltronaBanco {
                 }
             }
         } catch (SQLException e) {
+            // [TRATAMENTO DE ERROS]
             e.printStackTrace();
         }
         return lista;
     }
 
-    // Obter ID da poltrona pelo número
     public int getPoltronaId(int salaId, String poltronaNumero) {
         if (conn == null) return -1;
         String sql = "SELECT PoltronaId FROM Poltrona WHERE SalaId = ? AND PoltronaNumero = ?";
@@ -83,7 +96,6 @@ public class PoltronaBanco {
         return -1;
     }
 
-    // Apenas lista números disponíveis
     public List<String> listarPoltronasDisponiveis(int salaId) {
         if (conn == null) return Collections.emptyList();
         String sql = "SELECT PoltronaNumero FROM Poltrona WHERE SalaId = ? AND Disponibilidade = 1 ORDER BY PoltronaNumero";

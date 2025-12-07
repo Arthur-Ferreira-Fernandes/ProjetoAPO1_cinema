@@ -6,9 +6,13 @@ public class Ingresso {
     private int id;
     private String status;
     private LocalDateTime dataCompra;
-    private int clienteId;
-    private int sessaoId;
-    private int poltronaId;
+    
+    // [ASSOCIAÇÃO]: A classe não compõe objetos inteiros (como private Cliente cliente),
+    // mas sim associa-se através dos IDs (Chaves Estrangeiras), mantendo o acoplamento baixo
+    // e facilitando a persistência no banco SQL.
+    private int clienteId;   // Associação com Cliente
+    private int sessaoId;    // Associação com Sessao
+    private int poltronaId;  // Associação com Poltrona
 
     public Ingresso(String status, LocalDateTime dataCompra, int clienteId, int sessaoId, int poltronaId) {
         this.status = status;
@@ -18,7 +22,7 @@ public class Ingresso {
         this.poltronaId = poltronaId;
     }
 
-    // getters
+    // Getters (Acesso aos dados encapsulados)
     public String getStatus() { return status; }
     public LocalDateTime getDataCompra() { return dataCompra; }
     public int getClienteId() { return clienteId; }

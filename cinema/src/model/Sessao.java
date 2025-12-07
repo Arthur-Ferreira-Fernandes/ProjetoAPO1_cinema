@@ -6,6 +6,8 @@ public class Sessao {
     private int id;
     private LocalDateTime inicio;
     private LocalDateTime fim;
+    
+    // [ASSOCIAÇÃO]: Referências para as tabelas Filme e Sala.
     private int filmeId;
     private int salaId;
 
@@ -17,6 +19,7 @@ public class Sessao {
         this.salaId = salaId;
     }
 
+    // Getters
     public int getId() {
         return id;
     }

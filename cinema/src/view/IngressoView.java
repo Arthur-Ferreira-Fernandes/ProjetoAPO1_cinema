@@ -26,6 +26,7 @@ import model.Sessao;
 
 public class IngressoView {
 
+    // [COMPOSIÇÃO]: Instância de janela.
     public JFrame frame;
 
     private JComboBox<String> comboFilme;
@@ -37,8 +38,11 @@ public class IngressoView {
     private JTextField textEmailCliente;
     private JTextField textTelefoneCliente;
 
+    // [ASSOCIAÇÃO]: Referência fraca ao objeto Poltrona selecionado.
     private Poltrona assentoSelecionado;
 
+    // [AGREGAÇÃO - LIST]: A View agrega listas de dados carregadas do banco.
+    // Os dados (Filmes/Sessões) existem independentemente desta tela.
     private List<Filme> filmes = new ArrayList<>();
     private List<Sessao> sessoesDoFilme = new ArrayList<>();
 
@@ -78,6 +82,7 @@ public class IngressoView {
             int idx = comboFilme.getSelectedIndex();
             if (idx >= 0 && idx < filmes.size()) {
                 Filme f = filmes.get(idx);
+                // Carrega dados dependentes (Agregação de Sessões)
                 carregarDatas(f.getIdFilme());
                 comboHorario.removeAllItems();
                 assentoSelecionado = null;
@@ -176,6 +181,7 @@ public class IngressoView {
 
     private void abrirSelecionarPoltrona() {
         String horario = (String) comboHorario.getSelectedItem();
+        // [TRATAMENTO DE ERROS]: Validação de entrada.
         if (horario == null) {
             JOptionPane.showMessageDialog(frame, "Selecione data e horário primeiro!", "Erro", JOptionPane.WARNING_MESSAGE);
             return;
@@ -193,9 +199,13 @@ public class IngressoView {
 
         if (sessaoSelecionada != null) {
             int salaId = sessaoSelecionada.getSalaId();
+            // [ASSOCIAÇÃO]: Usa PoltronaBanco para buscar dados.
             PoltronaBanco pb = new PoltronaBanco();
+            
+            // [AGREGAÇÃO]: Carrega lista de poltronas do banco.
             List<Poltrona> poltronas = pb.listarPoltronas(salaId);
 
+            // [ASSOCIAÇÃO]: Cria janela filha passando 'this' para callback.
             SelecionarPoltronaView selecionarPoltrona = new SelecionarPoltronaView(frame, poltronas, this);
             selecionarPoltrona.setVisible(true);
         }
@@ -222,6 +232,7 @@ public class IngressoView {
         String telefone = textTelefoneCliente.getText().trim();
         String horario = (String) comboHorario.getSelectedItem();
 
+        // Lógica de busca de sessão
         Sessao sessaoSelecionada = null;
         DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
         for (Sessao s : sessoesDoFilme) {
@@ -232,6 +243,7 @@ public class IngressoView {
             }
         }
 
+        // [TRATAMENTO DE ERROS]: Validações de Interface
         if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty()) {
             JOptionPane.showMessageDialog(frame, "Preencha todos os dados do cliente!", "Erro", JOptionPane.WARNING_MESSAGE);
             return;
@@ -247,12 +259,14 @@ public class IngressoView {
             return;
         }
 
+        // [CÓDIGO DE ACESSO AO BANCO]: Chama método privado com JDBC direto
         int clienteId = inserirOuPegarCliente(nome, email, telefone);
         if (clienteId == -1) {
             JOptionPane.showMessageDialog(frame, "Erro ao cadastrar cliente!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        // Criação de Entidade (Model)
         Ingresso ingresso = new Ingresso(
             "CONFIRMADA",
             LocalDateTime.now(),
@@ -261,6 +275,7 @@ public class IngressoView {
             getPoltronaId(sessaoSelecionada.getSalaId(), assentoSelecionado.getNumero())
         );
 
+        // [ASSOCIAÇÃO]: Delega a persistência para o Controller
         IngressoController controller = new IngressoController();
         int ingressoId = controller.comprarIngressoRetornandoId(ingresso);
 
@@ -277,6 +292,8 @@ public class IngressoView {
         }
     }
 
+    // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: JDBC Direto (Mistura de camadas)
+    // Insere ou recupera um cliente
     private int inserirOuPegarCliente(String nome, String email, String telefone) {
         int clienteId = -1;
 
@@ -284,6 +301,7 @@ public class IngressoView {
             DBConnection db = new DBConnection();
             java.sql.Connection conn = db.getConnection();
 
+            // Verifica se cliente já existe
             String sqlSelect = "SELECT ClienteId FROM Cliente WHERE Email = ?";
             java.sql.PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
             psSelect.setString(1, email);
@@ -292,6 +310,7 @@ public class IngressoView {
             if (rs.next()) {
                 clienteId = rs.getInt("ClienteId");
             } else {
+                // Se não existe, insere e pega o ID gerado
                 String sqlInsert = "INSERT INTO Cliente (NomeCliente, Email, Telefone) VALUES (?, ?, ?)";
                 java.sql.PreparedStatement psInsert = conn.prepareStatement(sqlInsert, java.sql.Statement.RETURN_GENERATED_KEYS);
                 psInsert.setString(1, nome);
@@ -313,6 +332,7 @@ public class IngressoView {
             conn.close();
 
         } catch (Exception e) {
+            // [TRATAMENTO DE ERROS]: Loga exceção SQL
             e.printStackTrace();
         }
 
@@ -325,6 +345,7 @@ public class IngressoView {
     }
 
     private void carregarFilmes() {
+        // [ASSOCIAÇÃO]: Usa o DAO para preencher a agregação local
         FilmeBanco dao = new FilmeBanco();
         filmes = dao.listarFilmes();
         comboFilme.removeAllItems();

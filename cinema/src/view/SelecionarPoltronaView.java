@@ -6,13 +6,17 @@ import java.util.List;
 
 import model.Poltrona;
 
+// [HERANÇA]: Herda de JDialog para funcionar como janela modal.
 public class SelecionarPoltronaView extends JDialog {
 
+    // [AGREGAÇÃO - LIST]: Recebe lista de poltronas da sala.
     private List<Poltrona> poltronas;
+    
+    // [ASSOCIAÇÃO]: Referência à View pai para devolver o dado.
     private IngressoView ingressoView;
 
     public SelecionarPoltronaView(JFrame parent, List<Poltrona> poltronas, IngressoView ingressoView) {
-        super(parent, "Selecionar Poltrona", true); // modal
+        super(parent, "Selecionar Poltrona", true); // Configura modal
         this.poltronas = poltronas;
         this.ingressoView = ingressoView;
 
@@ -25,7 +29,7 @@ public class SelecionarPoltronaView extends JDialog {
 
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        panel.setLayout(new GridLayout(0, 5, 10, 10)); // 5 colunas, espaçamento horizontal e vertical 10
+        panel.setLayout(new GridLayout(0, 5, 10, 10)); // Layout de Grade
         getContentPane().add(panel, BorderLayout.CENTER);
 
         JLabel titulo = new JLabel("Escolha sua poltrona:");
@@ -36,12 +40,14 @@ public class SelecionarPoltronaView extends JDialog {
         for (Poltrona p : poltronas) {
             JButton btn = new JButton(p.getNumero());
 
+            // Verifica estado do modelo para alterar a View
             if (!p.isDisponivel()) {
                 btn.setEnabled(false); // poltrona ocupada
             }
 
             btn.addActionListener(e -> {
-                ingressoView.definirPoltrona(p); // devolve a poltrona selecionada
+                // [ASSOCIAÇÃO]: Devolve a poltrona selecionada via método da View pai
+                ingressoView.definirPoltrona(p); 
                 dispose(); // fecha a janela
             });
 
