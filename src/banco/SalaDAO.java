@@ -1,40 +1,34 @@
 package banco;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import model.Sala;
 
 public class SalaDAO {
 
-    public boolean isDisponivel(int salaId) throws SQLException {
-        String sql = "SELECT Disponivel FROM Sala WHERE SalaId = ?";
-        
+    public Sala buscarPorId(int salaId) throws SQLException {
+        String sql = "SELECT * FROM Sala WHERE SalaId = ?";
+        Sala sala = null;
+
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setInt(1, salaId);
-            ResultSet rs = ps.executeQuery();
             
-            if (rs.next()) {
-                return rs.getBoolean("Disponivel");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    sala = new Sala();
+                    sala.setId(rs.getInt("SalaId"));
+                    // [CORREÇÃO]: Nomes das colunas conforme seu novo SQL
+                    sala.setNumero(rs.getInt("NumeroSala")); 
+                    sala.setCapacidade(rs.getInt("Capacidade"));
+                    sala.setTipo(rs.getString("TipoSala")); 
+                    sala.setDisponivel(rs.getBoolean("Disponivel"));
+                }
             }
         }
-        // Se não achar a sala, consideramos indisponível ou lança erro
-        throw new SQLException("Sala não encontrada.");
-    }
-    
-    // Método opcional para buscar detalhes extras se quiser exibir
-    public String getDetalhes(int salaId) {
-        String sql = "SELECT NumeroSala, TipoSala, Capacidade FROM Sala WHERE SalaId = ?";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-             
-            ps.setInt(1, salaId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return "Sala " + rs.getInt("NumeroSala") + " (" + rs.getString("TipoSala") + ") - Cap: " + rs.getInt("Capacidade");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "Sala Desconhecida";
+        return sala;
     }
 }

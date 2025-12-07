@@ -1,12 +1,12 @@
 package controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import banco.ManutencaoDAO;
+import model.Manutencao;
 
 public class ManutencaoController {
 
-    // [COMPOSIÇÃO]: O Controller é responsável por instanciar e manter o DAO.
-    // Se o Controller deixar de existir, essa instância específica do DAO também deixa.
     private ManutencaoDAO manutencaoDAO;
 
     public ManutencaoController() {
@@ -14,29 +14,34 @@ public class ManutencaoController {
     }
 
     public String iniciarManutencao(int salaId) {
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Captura SQLException caso o banco falhe.
         try {
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Chama o método do DAO que executa o UPDATE/INSERT.
-            manutencaoDAO.registrarInicio(salaId);
-            return "Manutenção iniciada na Sala " + salaId + ". Bloqueio de vendas sugerido.";
+            Manutencao manutencao = new Manutencao();
+            manutencao.setSalaId(salaId);
+            manutencao.setDataManutencao(LocalDateTime.now());
+            manutencao.setStatus("EM MANUTENÇÃO");
+            manutencao.setObservacao("Bloqueio preventivo");
+
+            manutencaoDAO.registrarInicio(manutencao);
+            return "Manutenção iniciada na Sala " + salaId;
         } catch (SQLException e) {
             return "Erro ao iniciar manutenção: " + e.getMessage();
         }
     }
 
     public String finalizarManutencao(int salaId) {
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Proteção contra falhas SQL.
         try {
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Chama o DAO para registrar o fim da manutenção.
-            manutencaoDAO.registrarFim(salaId);
-            return "Manutenção finalizada na Sala " + salaId + ". Sala liberada.";
+            Manutencao manutencao = new Manutencao();
+            manutencao.setSalaId(salaId);
+            manutencao.setStatus("FINALIZADA");
+            
+            manutencaoDAO.registrarFim(manutencao);
+            return "Manutenção finalizada na Sala " + salaId;
         } catch (SQLException e) {
             return "Erro ao finalizar manutenção: " + e.getMessage();
         }
     }
 
     public String verHistorico(int salaId) {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Busca a lista formatada de manutenções anteriores.
         return manutencaoDAO.buscarHistorico(salaId);
     }
 }

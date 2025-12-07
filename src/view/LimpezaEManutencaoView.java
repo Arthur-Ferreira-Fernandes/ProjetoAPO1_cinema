@@ -11,7 +11,8 @@ import javax.swing.JOptionPane;
 
 import controller.LimpezaController;
 import controller.ManutencaoController;
-import controller.SalaController; // [NOVO IMPORT]
+import controller.SalaController;
+import model.Sala; // [NOVO IMPORT]
 
 public class LimpezaEManutencaoView {
 
@@ -19,19 +20,16 @@ public class LimpezaEManutencaoView {
     private JTextField txtSala;
     private JTextArea txtResultado;
     
-    // [COMPOSIÇÃO]: Controllers são partes integrantes desta View (instanciados no construtor).
     private LimpezaController limpezaController;
     private ManutencaoController manutencaoController;
-    private SalaController salaController; // [NOVO CONTROLADOR]
+    private SalaController salaController;
 
-    // [MÉTODOS ESTÁTICOS]: Método main.
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
                 LimpezaEManutencaoView window = new LimpezaEManutencaoView();
                 window.frame.setVisible(true);
             } catch (Exception e) {
-                // [TRATAMENTO DE ERROS E EXCEÇÕES]: Captura genérica de erros de inicialização.
                 e.printStackTrace();
             }
         });
@@ -40,7 +38,7 @@ public class LimpezaEManutencaoView {
     public LimpezaEManutencaoView() {
         this.limpezaController = new LimpezaController();
         this.manutencaoController = new ManutencaoController();
-        this.salaController = new SalaController(); // [INICIALIZAÇÃO]
+        this.salaController = new SalaController();
         initialize();
     }
 
@@ -107,7 +105,6 @@ public class LimpezaEManutencaoView {
         btnHistorico.addActionListener(e -> executarAcao(5));
         frame.getContentPane().add(btnHistorico);
 
-        // [MUDANÇA]: Botão alterado para verificar status geral da sala
         JButton btnStatus = new JButton("Verificar Disponibilidade");
         btnStatus.setBounds(416, 123, 163, 23);
         btnStatus.addActionListener(e -> executarAcao(6));
@@ -121,12 +118,10 @@ public class LimpezaEManutencaoView {
             return;
         }
 
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Bloco try-catch para tratar input numérico inválido e erros gerais.
         try {
             int salaId = Integer.parseInt(inputSala);
             String resultado = "";
 
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Todas as ações do switch chamam Controllers que acessam o banco.
             switch (tipoAcao) {
                 case 1: 
                     resultado = limpezaController.iniciarLimpeza(salaId);
@@ -143,19 +138,23 @@ public class LimpezaEManutencaoView {
                 case 5: 
                     String histManut = manutencaoController.verHistorico(salaId);
                     String histLimp = limpezaController.verHistorico(salaId);
-                    resultado = "============================================\n" +
-                                "           HISTÓRICO DE MANUTENÇÃO          \n" +
-                                "============================================\n" +
-                                histManut + "\n\n" +
-                                "============================================\n" +
-                                "            HISTÓRICO DE LIMPEZA            \n" +
-                                "============================================\n" +
-                                histLimp;
+                    resultado = "=== HISTÓRICO DE MANUTENÇÃO ===\n" + histManut + "\n\n" +
+                                "=== HISTÓRICO DE LIMPEZA ===\n" + histLimp;
                     break;
                     
-                // [MUDANÇA]: Chama o SalaController para ver disponibilidade
-                case 6: 
-                    resultado = "--- Verificação de Sala ---\n" + salaController.verificarStatusSala(salaId);
+                case 6: // [REFATORAÇÃO]: Uso do Objeto Sala
+                    Sala sala = salaController.buscarSala(salaId);
+                    if (sala != null) {
+                        String statusIcon = sala.isDisponivel() ? "✅ DISPONÍVEL" : "❌ INDISPONÍVEL";
+                        resultado = "--- Detalhes da Sala ---\n" +
+                                    "ID: " + sala.getId() + "\n" +
+                                    "Número: " + sala.getNumero() + "\n" +
+                                    "Tipo: " + sala.getTipo() + "\n" +
+                                    "Capacidade: " + sala.getCapacidade() + " lugares\n" +
+                                    "Status: " + statusIcon;
+                    } else {
+                        resultado = "Sala não encontrada no sistema.";
+                    }
                     break;
             }
 
@@ -163,10 +162,8 @@ public class LimpezaEManutencaoView {
             txtResultado.setCaretPosition(0);
 
         } catch (NumberFormatException ex) {
-            // [TRATAMENTO DE ERROS]: Especifico para conversão de String para int.
             JOptionPane.showMessageDialog(frame, "O número da sala deve ser um valor inteiro válido.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            // [TRATAMENTO DE ERROS]: Genérico para qualquer outra falha (ex: falha de conexão SQL propagada).
             txtResultado.setText("Erro inesperado: " + ex.getMessage());
             ex.printStackTrace();
         }

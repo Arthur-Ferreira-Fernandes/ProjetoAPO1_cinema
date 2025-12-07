@@ -1,60 +1,78 @@
 package banco;
 
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import model.Ingresso;
+import model.Reserva;
 
 public class IngressoDAO {
 
-    // [MODIFICAÇÃO]: Agora chama a procedure sp_ComprarIngresso
     public int inserir(Ingresso ingresso) throws SQLException {
+        // [CORREÇÃO]: Chama a Procedure sp_ComprarIngresso que verifica Sala Disponível
         String sql = "{call sp_ComprarIngresso(?, ?, ?, ?, ?)}";
-        
+        int idGerado = -1;
+
         try (Connection conn = new DBConnection().getConnection();
              CallableStatement cs = conn.prepareCall(sql)) {
             
-            // Parâmetros de Entrada (IN)
+            // Parâmetros IN
             cs.setInt(1, ingresso.getClienteId());
             cs.setInt(2, ingresso.getSessaoId());
             cs.setInt(3, ingresso.getPoltronaId());
-            cs.setString(4, ingresso.getStatus());
-
-            // Parâmetro de Saída (OUT) - O ID gerado ou -1 se falhar
+            cs.setString(4, ingresso.getStatus()); // 'PAGO'
+            
+            // Parâmetro OUT (p_IngressoId)
             cs.registerOutParameter(5, Types.INTEGER);
-
+            
             cs.execute();
-
-            return cs.getInt(5); // Retorna o ID do ingresso
+            
+            idGerado = cs.getInt(5);
         }
+        return idGerado;
     }
 
-    public boolean existeReserva(int ingressoId) {
-        String sql = "SELECT IngressoId FROM Ingresso WHERE IngressoId = ?";
+    public Reserva buscarPorId(int ingressoId) {
+        // [CORREÇÃO]: Coluna StatusIngresso
+        String sql = "SELECT IngressoId, StatusIngresso, PoltronaId FROM Ingresso WHERE IngressoId = ?";
+        Reserva reserva = null;
+
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            
             ps.setInt(1, ingressoId);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    reserva = new Reserva(
+                        rs.getInt("IngressoId"),
+                        rs.getString("StatusIngresso"),
+                        rs.getInt("PoltronaId")
+                    );
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return reserva;
     }
 
-    // [MODIFICAÇÃO]: Agora chama a procedure sp_CancelarReserva
-    public String cancelarReserva(int ingressoId) throws SQLException {
-        String sql = "{call sp_CancelarReserva(?, ?)}";
+    public String cancelar(Reserva reserva) throws SQLException {
+        String sql = "{call sp_CancelarReserva(?, ?)}"; 
+        String resultado = "Erro";
 
         try (Connection conn = new DBConnection().getConnection();
              CallableStatement cs = conn.prepareCall(sql)) {
-
-            cs.setInt(1, ingressoId);
             
-            // Registra o parâmetro de saída (mensagem de texto do banco)
+            cs.setInt(1, reserva.getId());
             cs.registerOutParameter(2, Types.VARCHAR);
             
             cs.execute();
-
-            return cs.getString(2); // Retorna a mensagem do banco (ex: "Sucesso")
+            
+            resultado = cs.getString(2);
         }
+        return resultado;
     }
 }

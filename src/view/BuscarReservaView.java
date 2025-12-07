@@ -6,14 +6,13 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-// [MUDANÇA]: Agora usa IngressoController
 import controller.IngressoController;
+import model.Reserva; // [NOVO IMPORT]
 
 public class BuscarReservaView {
 
     private JFrame frmBuscarReserva;
     private JTextField textFieldCodReserva;
-    // [COMPOSIÇÃO]: Controller instanciado internamente.
     private IngressoController controller;
 
     public BuscarReservaView() {
@@ -56,7 +55,6 @@ public class BuscarReservaView {
     }
     
     private void buscar() {
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]: Protege contra input não numérico.
         try {
             String texto = textFieldCodReserva.getText().trim();
             if (texto.isEmpty()) {
@@ -66,10 +64,12 @@ public class BuscarReservaView {
 
             int reservaId = Integer.parseInt(texto);
             
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS (Indireto)]: Verifica se a reserva existe no banco.
-            if (controller.existeReserva(reservaId)) {
-                // [ASSOCIAÇÃO]: Cria e chama CancelarReservaView passando o ID.
-                CancelarReservaView cancelar = new CancelarReservaView(reservaId);
+            // [MUDANÇA]: Agora manipulamos o Objeto Reserva
+            Reserva reserva = controller.buscarReserva(reservaId);
+            
+            if (reserva != null) {
+                // Passamos o ID para a tela de cancelamento (ou poderia passar o objeto inteiro)
+                CancelarReservaView cancelar = new CancelarReservaView(reserva.getId());
                 cancelar.getFrame().setVisible(true);
                 frmBuscarReserva.dispose();
             } else {

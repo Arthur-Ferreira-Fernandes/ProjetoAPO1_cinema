@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Sessao;
-// Importe LocalDateTime se necessário no seu Model
 
 public class SessaoDAO {
 
@@ -21,7 +20,6 @@ public class SessaoDAO {
             while (rs.next()) {
                 Sessao s = new Sessao();
                 s.setId(rs.getInt("SessaoId"));
-                // Converter Timestamp do SQL para LocalDateTime do Java
                 s.setInicio(rs.getTimestamp("HorarioInicio").toLocalDateTime());
                 s.setFim(rs.getTimestamp("HorarioFim").toLocalDateTime());
                 s.setSalaId(rs.getInt("SalaId"));

@@ -27,6 +27,7 @@ public class ClienteDAO {
     }
 
     private int inserir(Cliente c) throws SQLException {
+        // [CORREÇÃO]: Coluna NomeCliente
         String sql = "INSERT INTO Cliente (NomeCliente, Email, Telefone) VALUES (?, ?, ?)";
         try (Connection conn = new DBConnection().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {

@@ -1,11 +1,12 @@
 package controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import banco.LimpezaDAO;
+import model.Limpeza;
 
 public class LimpezaController {
 
-    // [COMPOSIÇÃO]: Controller possui o DAO de limpeza.
     private LimpezaDAO limpezaDAO;
 
     public LimpezaController() {
@@ -13,10 +14,15 @@ public class LimpezaController {
     }
 
     public String iniciarLimpeza(int salaId) {
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]
         try {
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Registra início da limpeza.
-            limpezaDAO.registrarInicio(salaId);
+            // Cria objeto conforme esperado pelo LimpezaDAO
+            Limpeza limpeza = new Limpeza();
+            limpeza.setSalaId(salaId);
+            limpeza.setDataLimpeza(LocalDateTime.now());
+            limpeza.setStatus("EM ANDAMENTO");
+            limpeza.setObservacao("Início de rotina");
+
+            limpezaDAO.registrarInicio(limpeza); 
             return "Limpeza iniciada com sucesso na Sala " + salaId;
         } catch (SQLException e) {
             return "Erro ao iniciar limpeza: " + e.getMessage();
@@ -24,24 +30,20 @@ public class LimpezaController {
     }
 
     public String finalizarLimpeza(int salaId) {
-        // [TRATAMENTO DE ERROS E EXCEÇÕES]
         try {
-            // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Atualiza registro com data fim e status.
-            limpezaDAO.registrarFim(salaId);
+            Limpeza limpeza = new Limpeza();
+            limpeza.setSalaId(salaId);
+            limpeza.setDataLimpeza(LocalDateTime.now());
+            limpeza.setStatus("CONCLUÍDA");
+
+            limpezaDAO.registrarFim(limpeza);
             return "Limpeza finalizada com sucesso na Sala " + salaId;
         } catch (SQLException e) {
             return "Erro ao finalizar limpeza: " + e.getMessage();
         }
     }
 
-    public String verStatus(int salaId) {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Busca status atual.
-        return limpezaDAO.buscarUltimoStatus(salaId);
-    }
-
-    // [NOVO MÉTODO]
     public String verHistorico(int salaId) {
-        // [CÓDIGO DE ACESSO AO BANCO DE DADOS]: Busca histórico completo.
         return limpezaDAO.buscarHistorico(salaId);
     }
 }
